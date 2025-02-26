@@ -2,23 +2,21 @@
 #include <stdlib.h>
 #include <time.h>
 
-
-#define N 100
 #define DEBUG 0
 
-void FillInc(int Arr[N]){
+void FillInc(int Arr[], int N){
     for(int i = 0; i < N; i++){
         Arr[i] = i;
     }
 }
 
-void FillDec(int Arr[N]){
+void FillDec(int Arr[], int N){
     for(int i = 0; i < N; i++){
-        Arr[N-i-1] = i; 
+        Arr[N-i-1] = i;
     }
 }
 
-void FillRand(int Arr[N]){
+void FillRand(int Arr[], int N){
     srand(time(NULL));
     for(int i = 0; i < N; i++){
         Arr[i] = rand();
@@ -28,93 +26,102 @@ void FillRand(int Arr[N]){
     }
 }
 
-long int CheckSum(int Arr[N]){
-    long int sum = 0;
-    for(int i = 0; i < N; i++){
-        sum += Arr[i];
-    }
-    return sum;
-}
-
-
-int AvgSeries(int Arr[N]){
-    int series = 0;
-    int s_counter = 0;
-    for(int i = 1; i < N; i++){
-        if(Arr[i-1] < Arr[i]){
-            s_counter++;
-        }
-        else if(s_counter>0){
-            s_counter = 0;
-            series++;
-        }
-        if(i == N-1 && s_counter>0){
-            series++;
-        }
-    }
-    return series;
-}
-
-int RunNumber(int Arr[N]){
-    int series = 0;
-    int s_counter = 1;
-    for(int i = 1; i < N; i++){
-        if(Arr[i] >= Arr[i-1]){
-            s_counter++;
-        }
-        else{
-            s_counter = 1;
-            series++;
-        }
-        if(i == N-1 && s_counter>0){
-            series++;
-        }
-    }
-    return series;
-}
-
-void PrintMas(int Arr[N]){
-    for(int i = 0; i < N; i++){
-        printf("%d ", Arr[i]);
-    }
-    printf("\n");
-}
-
-void SelectSort(int Arr[N], int *Cf, int *Mf){
+void SelectSortSimple(int Arr[], int N, int *Cf, int *Mf){
     *Cf = 0;
     *Mf = 0;
 
-    for(int i = 0; i<N; i++){
+    for(int i = 0; i < N-1; i++){
         int k = i;
-        for(int j = i; j<N; j++){
+        for(int j = i; j < N; j++){
             (*Cf)++;
             if(Arr[j] < Arr[k]){
                 k = j;
             }
         }
-        if(1){
+        if(1){ // k != i
             int buffer = Arr[i];
             Arr[i] = Arr[k];
             Arr[k] = buffer;
-            (*Mf)++;
+            (*Mf) += 2;
         }
     }
 }
 
-int main(){
-    int A[N];
-    FillRand(A); // N10 Cf 55 ; Mf 10 | N100 Cf 5050; Mf 100 
-    // FillInc(A); // N10 Cf 55; Mf 10 | N100 Cf 5050; Mf 100
-    // FillDec(A); // N10 Cf 55; Mf 10 | N100 Cf 5050; Mf 100
-    printf("Контрольная сумма до: %ld\n", CheckSum(A));
-    printf("Количество серий до: %d\n", RunNumber(A));
-    //PrintMas(A);
-    printf("------------------------------\n");
+void SelectSortImproved(int Arr[], int N, int *Cf, int *Mf){
+    *Cf = 0;
+    *Mf = 0;
+
+    for(int i = 0; i < N; i++){
+        int k = i;
+        for(int j = i + 1; j < N; j++){ 
+            (*Cf)++;
+            if(Arr[j] < Arr[k]){
+                k = j;
+            }
+        }
+        if(k != i){
+            int buffer = Arr[i];
+            Arr[i] = Arr[k];
+            Arr[k] = buffer;
+            (*Mf) += 3;
+        }
+    }
+}
+
+void PrintTableHeader() {
+    printf("| %-5s | %-15s | %-37s | %-37s |\n", "N", "M+C теоретич.", "Исходный Mfact + Cfact", "Улучшенный Mfact + Cfact");
+    printf("|       |               | Убыв. | Случ. | Возр.         | Убыв. | Случ. | Возр.       |\n");
+}
+
+void PrintTableRow(int N, int M_C_theoretical, int Mf_Cf_original[], int Mf_Cf_improved[]) {
+    printf("| %-5d | %-13d | %-5d | %-5d | %-13d | %-5d | %-5d | %-11d |\n",
+           N, M_C_theoretical,
+           Mf_Cf_original[0], Mf_Cf_original[1], Mf_Cf_original[2],
+           Mf_Cf_improved[0], Mf_Cf_improved[1], Mf_Cf_improved[2]);
+}
+
+int main() {
+    int sizes[] = {10, 100};
     int Cf, Mf;
-    SelectSort(A, &Cf, &Mf);
-    printf("Контрольная сумма до: %ld\n", CheckSum(A));
-    printf("Количество серий до: %d\n", RunNumber(A));
-    printf("Сравнений: %d\n", Cf);
-    printf("Пересылок: %d\n", Mf);
-    //PrintMas(A);
+    printf("\n");
+    PrintTableHeader();
+
+    for(int i = 0; i < 2; i++){
+        int N = sizes[i];
+        int ArrInc[N], ArrDec[N], ArrRand[N];
+        int Mf_Cf_original[3] = {0};
+        int Mf_Cf_improved[3] = {0};
+
+        int M_C_theoretical = (((N*N)-N)/2)+(3*(N-1));
+
+        // Simple SelectSort
+        FillInc(ArrInc, N);
+        SelectSortSimple(ArrInc, N, &Cf, &Mf);
+        Mf_Cf_original[2] = Mf + Cf;
+
+        FillDec(ArrDec, N);
+        SelectSortSimple(ArrDec, N, &Cf, &Mf);
+        Mf_Cf_original[0] = Mf + Cf;
+
+        FillRand(ArrRand, N);
+        SelectSortSimple(ArrRand, N, &Cf, &Mf);
+        Mf_Cf_original[1] = Mf + Cf;
+
+        // Improved SelectSort
+        FillInc(ArrInc, N);
+        SelectSortImproved(ArrInc, N, &Cf, &Mf);
+        Mf_Cf_improved[2] = Mf + Cf;
+
+        FillDec(ArrDec, N);
+        SelectSortImproved(ArrDec, N, &Cf, &Mf);
+        Mf_Cf_improved[0] = Mf + Cf;
+
+        FillRand(ArrRand, N);
+        SelectSortImproved(ArrRand, N, &Cf, &Mf);
+        Mf_Cf_improved[1] = Mf + Cf;
+
+        PrintTableRow(N, M_C_theoretical, Mf_Cf_original, Mf_Cf_improved);
+    }
+    printf("\n");
+    return 0;
 }
