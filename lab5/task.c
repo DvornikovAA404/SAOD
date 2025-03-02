@@ -42,40 +42,21 @@ void BubbleSort(int Arr[], int N, int *Cf, int *Mf){
     }
 }
 
-void ShakerSort(int Arr[], int N, int *Cf, int *Mf) {
-    *Cf = 0;
-    *Mf = 0;
-    int L = 0, R = N - 1, k = N - 1; // Индексация с 0
+void InsertSort(int * A, int n, int * Mf, int * Cf){
 
-    do {
-        // Проход справа налево
-        for (int j = R; j > L; j--) {
-            (*Cf)++;
-            if (Arr[j] < Arr[j - 1]) {
-                int buffer = Arr[j];
-                Arr[j] = Arr[j - 1];
-                Arr[j - 1] = buffer;
-                k = j;
-                (*Mf) += 3;
-            }
+    (*Mf) = 0;
+    (*Cf) = 0;
+    for(int i = 1; i < n; i++){
+        (*Mf)++;int t = A[i];
+        int j = i-1;
+        while(j >= 0 && ((*Cf)=(*Cf)+1,t < A[j])){
+            (*Mf)++;A[j+1] = A[j];
+            j = j-1;
         }
-        L = k;
+        (*Mf)++;A[j+1] = t;
+    }
 
-        // Проход слева направо
-        for (int j = L; j < R; j++) {
-            (*Cf)++;
-            if (Arr[j] > Arr[j + 1]) {
-                int buffer = Arr[j];
-                Arr[j] = Arr[j + 1];
-                Arr[j + 1] = buffer;
-                k = j;
-                (*Mf) += 3;
-            }
-        }
-        R = k;
-    } while (L < R);
 }
-
 
 void PrintMas(int N, int Arr[N]){
     for(int i = 0; i < N; i++){
@@ -153,17 +134,17 @@ int main() {
 
         // Improved SelectSort
         FillInc(ArrInc, N);
-        ShakerSort(ArrInc, N, &Cf, &Mf);
+        InsertSort(ArrInc, N, &Cf, &Mf);
         Mf_Cf_improved[2] = Mf + Cf;
 
         FillDec(ArrDec, N);
-        ShakerSort(ArrDec, N, &Cf, &Mf);
+        InsertSort(ArrDec, N, &Cf, &Mf);
         Mf_Cf_improved[0] = Mf + Cf;
 
         FillRand(ArrRand, N);
         sumdo = CheckSum(ArrRand, N);
         sdo = RunNumber(ArrRand, N);
-        ShakerSort(ArrRand, N, &Cf, &Mf);
+        InsertSort(ArrRand, N, &Cf, &Mf);
         sumposle = CheckSum(ArrRand, N);
         sposle = RunNumber(ArrRand, N);
         Mf_Cf_improved[1] = Mf + Cf;
