@@ -8,5 +8,7 @@ ShakerSort:
 	gcc lab4/task.c && ./a.out
 InsertSort:
 	gcc lab5/task.c && ./a.out
+ShellSort:
+	gcc lab6/task.c && ./a.out
 clear:
 	rm a.out
