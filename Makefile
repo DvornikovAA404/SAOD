@@ -10,5 +10,7 @@ InsertSort:
 	gcc lab5/task.c && ./a.out
 ShellSort:
 	gcc lab6/task.c && ./a.out
+BinarySearch:
+	gcc lab7/task.c && ./a.out
 clear:
 	rm a.out
