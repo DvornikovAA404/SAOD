@@ -9,16 +9,6 @@ typedef struct {
     char address[100];
 } PhoneBookEntry;
 
-int CompareByName(const PhoneBookEntry *a, const PhoneBookEntry *b) {
-    int cmp = strcmp(a->firstName, b->firstName);
-    if (cmp != 0) return cmp;
-    return strcmp(a->lastName, b->lastName);
-}
-
-int CompareByPhone(const PhoneBookEntry *a, const PhoneBookEntry *b) {
-    return strcmp(a->phoneNumber, b->phoneNumber);
-}
-
 void InsertSort(PhoneBookEntry *phoneBook, int size, int (*compare)(const PhoneBookEntry *, const PhoneBookEntry *)) {
     for (int i = 1; i < size; i++) {
         PhoneBookEntry key = phoneBook[i];
@@ -54,24 +44,6 @@ int main() {
 
     printf("Исходный справочник:\n");
     PrintPhoneBook(phoneBook, size);
-
-    int choice;
-    printf("\nВыберите ключ сортировки:\n");
-    printf("1 - По имени и фамилии\n");
-    printf("2 - По номеру телефона\n");
-    printf("Введите ваш выбор: ");
-    scanf("%d", &choice);
-
-    if (choice == 1) {
-        InsertSort(phoneBook, size, CompareByName);
-        printf("\nСправочник отсортирован по имени и фамилии:\n");
-    } else if (choice == 2) {
-        InsertSort(phoneBook, size, CompareByPhone);
-        printf("\nСправочник отсортирован по номеру телефона:\n");
-    } else {
-        printf("Неверный выбор. Сортировка не выполнена.\n");
-        return 1;
-    }
 
     PrintPhoneBook(phoneBook, size);
 
