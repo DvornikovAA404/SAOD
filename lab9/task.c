@@ -40,20 +40,29 @@ void PrintPhoneBookIndexed(const PhoneBookEntry *phoneBook, const int *indexArra
     }
 }
 
-int BinarySearch(const PhoneBookEntry *phoneBook, const int *indexArray, int size, const char *key, int (*compare)(const PhoneBookEntry *, const char *)) {
-    int left = 0, right = size - 1;
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        int cmp = compare(&phoneBook[indexArray[mid]], key);
-        if (cmp == 0) {
-            return indexArray[mid];
-        } else if (cmp > 0) {
-            right = mid - 1;
-        } else {
-            left = mid + 1;
+void FindAllMatches(const PhoneBookEntry *phoneBook, const int *indexArray, int size, const char *key, int (*compare)(const PhoneBookEntry *, const char *)) {
+    int foundMatches[size];
+    int matchCount = 0;
+
+    for (int i = 0; i < size; i++) {
+        if (compare(&phoneBook[indexArray[i]], key) == 0) {
+            foundMatches[matchCount++] = indexArray[i];
         }
     }
-    return -1;
+
+    if (matchCount > 0) {
+        printf("\nНайдено %d записей:\n", matchCount);
+        for (int i = 0; i < matchCount; i++) {
+            int idx = foundMatches[i];
+            printf("--------------------\n");
+            printf("  Имя: %s\n", phoneBook[idx].firstName);
+            printf("  Фамилия: %s\n", phoneBook[idx].lastName);
+            printf("  Номер телефона: %s\n", phoneBook[idx].phoneNumber);
+            printf("  Адрес: %s\n", phoneBook[idx].address);
+        }
+    } else {
+        printf("\nЗаписи с ключом '%s' не найдены.\n", key);
+    }
 }
 
 int CompareByName(const PhoneBookEntry *entry, const char *name) {
@@ -95,33 +104,14 @@ int main() {
     PrintPhoneBookIndexed(phoneBook, indexByLastName, size);
 
     char searchKey[50];
+
     printf("\nВведите имя для поиска: ");
     scanf("%s", searchKey);
-
-    int foundIndex = BinarySearch(phoneBook, indexByFirstName, size, searchKey, CompareByName);
-    if (foundIndex != -1) {
-        printf("\nЗапись с именем '%s' найдена:\n", searchKey);
-        printf("  Имя: %s\n", phoneBook[foundIndex].firstName);
-        printf("  Фамилия: %s\n", phoneBook[foundIndex].lastName);
-        printf("  Номер телефона: %s\n", phoneBook[foundIndex].phoneNumber);
-        printf("  Адрес: %s\n", phoneBook[foundIndex].address);
-    } else {
-        printf("\nЗапись с именем '%s' не найдена.\n", searchKey);
-    }
+    FindAllMatches(phoneBook, indexByFirstName, size, searchKey, CompareByName);
 
     printf("\nВведите фамилию для поиска: ");
     scanf("%s", searchKey);
-
-    foundIndex = BinarySearch(phoneBook, indexByLastName, size, searchKey, CompareBySurname);
-    if (foundIndex != -1) {
-        printf("\nЗапись с фамилией '%s' найдена:\n", searchKey);
-        printf("  Имя: %s\n", phoneBook[foundIndex].firstName);
-        printf("  Фамилия: %s\n", phoneBook[foundIndex].lastName);
-        printf("  Номер телефона: %s\n", phoneBook[foundIndex].phoneNumber);
-        printf("  Адрес: %s\n", phoneBook[foundIndex].address);
-    } else {
-        printf("\nЗапись с фамилией '%s' не найдена.\n", searchKey);
-    }
+    FindAllMatches(phoneBook, indexByLastName, size, searchKey, CompareBySurname);
 
     return 0;
 }
