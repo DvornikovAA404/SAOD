@@ -73,6 +73,13 @@ int CompareBySurname(const PhoneBookEntry *entry, const char *surname) {
     return strcmp(entry->lastName, surname);
 }
 
+void indexPrint(int index[], int size){
+    for(int i = 0; i < size; i++){
+        printf("%d ", index[i]);
+    }
+    printf("\n");
+}
+
 int main() {
     PhoneBookEntry phoneBook[] = {
         {"Иван", "Иванов", "+79001234567", "Москва, ул. Ленина, д. 1"},
@@ -90,7 +97,10 @@ int main() {
         indexByFirstName[i] = i;
         indexByLastName[i] = i;
     }
-
+    printf("Индексный массив для имени до: ");
+    indexPrint(indexByFirstName, size);
+    printf("Индексный массив для фамилии до: ");
+    indexPrint(indexByLastName, size);
     InsertSort(indexByFirstName, size, CompareByFirstName, phoneBook);
     InsertSort(indexByLastName, size, CompareByLastName, phoneBook);
 
