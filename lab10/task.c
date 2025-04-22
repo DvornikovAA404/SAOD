@@ -124,7 +124,7 @@ void PrintTableRow(int N, int M_C_theoretical, int Mf_Cf_original[]) {
 }
 
 void PrintTableHeader2() {
-    printf("| %-5s | %-41s |\n", "N", "M+C теоретич.", "Исходный Mfact + Cfact");
+    printf("| %-5s | %-41s |\n", "N", "Исходный Mfact + Cfact");
     printf("|       | Убыв.   | Случ.  | Возр.          |\n");
 }
 
@@ -138,7 +138,6 @@ int main() {
     srand(time(NULL));
     int sizes[] = {100, 200, 300, 400, 500};
 
-    // Таблица 1: Трудоемкость построения пирамиды
     printf("Таблица 1: Трудоемкость построения пирамиды\n");
     PrintTableHeader();
 
@@ -147,7 +146,6 @@ int main() {
         int teor = (int)(calculate_M_build(N) + calculate_C_build(N));
         int Mf_Cf_original[3] = {0};
 
-        // Убывающий массив
         int ArrDec[N];
         FillDec(N, ArrDec);
         HeapBuild(ArrDec, 0, N - 1);
@@ -155,7 +153,6 @@ int main() {
         C_build = 0;
         M_build = 0;
 
-        // Случайный массив
         int ArrRand[N];
         FillRand(N, ArrRand);
         HeapBuild(ArrRand, 0, N - 1);
@@ -163,7 +160,6 @@ int main() {
         C_build = 0;
         M_build = 0;
 
-        // Возрастающий массив
         int ArrInc[N];
         FillInc(N, ArrInc);
         HeapBuild(ArrInc, 0, N - 1);
@@ -171,11 +167,9 @@ int main() {
         C_build = 0;
         M_build = 0;
 
-        // Печать строки таблицы
         PrintTableRow(N, teor, Mf_Cf_original);
     }
 
-    // Таблица 2: Трудоемкость сортировки
     printf("\nТаблица 2: Трудоемкость сортировки\n");
     PrintTableHeader2();
 
@@ -184,7 +178,6 @@ int main() {
         int teor = (int)(calculate_M(N) + calculate_C(N));
         int Mf_Cf_original[3] = {0};
 
-        // Убывающий массив
         int ArrDec[N];
         FillDec(N, ArrDec);
         HeapSort(ArrDec, N);
@@ -192,7 +185,6 @@ int main() {
         C = 0;
         M = 0;
 
-        // Случайный массив
         int ArrRand[N];
         FillRand(N, ArrRand);
         HeapSort(ArrRand, N);
@@ -200,7 +192,6 @@ int main() {
         C = 0;
         M = 0;
 
-        // Возрастающий массив
         int ArrInc[N];
         FillInc(N, ArrInc);
         HeapSort(ArrInc, N);
@@ -208,7 +199,6 @@ int main() {
         C = 0;
         M = 0;
 
-        // Печать строки таблицы
         PrintTableRow2(N, teor, Mf_Cf_original);
     }
 

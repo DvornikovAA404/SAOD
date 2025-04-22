@@ -3,8 +3,8 @@
 #include <time.h>
 #include <math.h>
 
-int C = 0; // Счетчик сравнений
-int M = 0; // Счетчик пересылок
+int C = 0; 
+int M = 0; 
 
 void FillInc(int Arr[], int N) {
     for(int i = 0; i < N; i++) 
@@ -46,19 +46,19 @@ void Swap(int *x, int *y) {
     int t = *x;
     *x = *y;
     *y = t;
-    M += 3; // Учитываем 3 пересылки при обмене
+    M += 3; 
 }
 
 int Partition(int Arr[], int L, int R) {
-    int x = Arr[L]; // Опорный элемент
+    int x = Arr[L]; 
     int i = L;
     int j = R;
     
     while(1) {
         while(Arr[i] < x) { C++; i++; }
-        C++; // Учет последнего сравнения, когда условие не выполнилось
+        C++; 
         while(Arr[j] > x) { C++; j--; }
-        C++; // Учет последнего сравнения, когда условие не выполнилось
+        C++; 
         
         if(i < j) {
             Swap(&Arr[i], &Arr[j]);
@@ -93,32 +93,27 @@ int main() {
     srand(time(NULL));
     int sizes[] = {100, 200, 300, 400, 500};
 
-    printf("Трудоемкость метода Хоара (QuickSort)\n");
     PrintTableHeader();
     
     for(int i = 0; i < 5; i++) {
         int N = sizes[i];
         int Mf_Cf[3] = {0};
         
-        // Теоретическая оценка (в среднем случае)
         double teor = N * log2(N);
         int teor_total = (int)teor;
 
-        // Убывающий массив
         int ArrDec[N];
         FillDec(ArrDec, N);
         QuickSort(ArrDec, 0, N-1);
         Mf_Cf[0] = C + M;
         C = M = 0;
 
-        // Возрастающий массив
         int ArrInc[N];
         FillInc(ArrInc, N);
         QuickSort(ArrInc, 0, N-1);
         Mf_Cf[1] = C + M;
         C = M = 0;
 
-        // Случайный массив
         int ArrRand[N];
         FillRand(ArrRand, N);
         QuickSort(ArrRand, 0, N-1);

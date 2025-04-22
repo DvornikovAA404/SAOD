@@ -12,5 +12,7 @@ ShellSort:
 	gcc lab6/task.c && ./a.out
 BinarySearch:
 	gcc lab7/task.c && ./a.out
+QuickSort:
+	gcc lab11/task.c -lm && ./a.out
 clear:
 	rm a.out
