@@ -8,10 +8,10 @@ typedef struct Node {
     struct Node* next;
 } Node;
 
-int C_f; // Счётчик сравнений
-int M_f; // Счётчик перемещений
+int C_f; 
+int M_f; 
 
-// Создание списков
+
 Node* create_desc(int n) {
     Node* head = NULL;
     for (int i = n; i >= 1; i--) {
@@ -19,7 +19,7 @@ Node* create_desc(int n) {
         new_node->data = i;
         new_node->next = head;
         head = new_node;
-        M_f++; // Учёт перемещений при создании
+        M_f++; 
     }
     return head;
 }
@@ -31,7 +31,7 @@ Node* create_asc(int n) {
         new_node->data = i;
         new_node->next = head;
         head = new_node;
-        M_f++; // Учёт перемещений при создании
+        M_f++;
     }
     return head;
 }
@@ -45,24 +45,24 @@ Node* create_random(int n) {
         new_node->data = num;
         new_node->next = head;
         head = new_node;
-        M_f++; // Учёт перемещений при создании
+        M_f++;
     }
     return head;
 }
 
-// Удаление списка
+
 void delete_list(Node** head) {
     Node* current = *head;
     while (current) {
         Node* temp = current;
         current = current->next;
         free(temp);
-        M_f++; // Учёт перемещений при удалении
+        M_f++;
     }
     *head = NULL;
 }
 
-// Слияние и сортировка
+
 Node* merge(Node* left, Node* right) {
     Node dummy;
     Node* tail = &dummy;
@@ -93,16 +93,16 @@ Node* mergeSort(Node* head) {
     while (fast && fast->next) {
         slow = slow->next;
         fast = fast->next->next;
-        M_f += 2; // Учёт перемещений указателей
+        M_f += 2; 
     }
     Node* right = slow->next;
     slow->next = NULL;
-    M_f += 2; // Учёт разрыва списка
+    M_f += 2; 
 
     return merge(mergeSort(head), mergeSort(right));
 }
 
-// Форматирование таблицы
+
 void printHeader() {
     printf("| %-5s | %-20s | %-7s | %-7s | %-7s |\n", 
            "N", "M+C теория", "Убыв.", "Случ.", "Возр.");
@@ -114,7 +114,7 @@ void printRow(int n, int theory, int desc, int rand, int asc) {
            n, theory, desc, rand, asc);
 }
 
-// Тестирование для всех типов данных
+
 void testMergeSort() {
     int sizes[] = {100, 200, 300, 400, 500};
     printf("\nТрудоемкость сортировки прямого слияния\n");
@@ -123,9 +123,9 @@ void testMergeSort() {
     for (int i = 0; i < 5; i++) {
         int n = sizes[i];
         int theory = n * (int)ceil(log2(n)) + n * (int)ceil(log2(n)) + n;
-        int results[3] = {0}; // [Убыв., Случ., Возр.]
+        int results[3] = {0};
 
-        // Тестирование для каждого типа
+
         for (int t = 0; t < 3; t++) {
             Node* list = NULL;
             switch(t) {
