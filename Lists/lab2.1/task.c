@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define N 10
+
 typedef struct Node {
     int data;
     struct Node* next;
@@ -160,40 +162,59 @@ void print_backward_recursive(Node* head) {
 }
 
 int main() {
-    Node* stack_asc = create_stack_asc(5);
+    Node* stack_asc = create_stack_asc(N);
     printf("Возрастающий стек: ");
-    print_list(stack_asc); 
+    print_list(stack_asc);
 
-    Node* stack_desc = create_stack_desc(5);
+    printf("Контрольная сумма возрастающего стека: %d\n", checksum(stack_asc));
+    printf("Количество серий возрастающего стека: %d\n", count_series(stack_asc));
+    printf("\n");
+
+    Node* stack_desc = create_stack_desc(N);
     printf("Убывающий стек: ");
     print_list(stack_desc);
+    printf("Контрольная сумма убывающего стека: %d\n", checksum(stack_desc));
+    printf("Количество серий убывающего стека: %d\n", count_series(stack_desc));
+    printf("\n");
 
-    Node* stack_rand = create_stack_random(5, 10, 20);
+    srand(time(NULL));
+
+    Node* stack_rand = create_stack_random(N, 10, 20);
     printf("Случайный стек: ");
     print_list(stack_rand);
+    printf("Контрольная сумма случайного стека: %d\n", checksum(stack_rand));
+    printf("Количество серий случайного стека: %d\n", count_series(stack_rand));
+    printf("\n");
 
-    Node* queue_asc = create_queue_asc(5);
+    Node* queue_asc = create_queue_asc(N);
     printf("Возрастающая очередь: ");
     print_list(queue_asc); 
+    printf("Контрольная сумма возрастающей очереди: %d\n", checksum(queue_asc));
+    printf("Количество серий возрастающей очереди: %d\n", count_series(queue_asc));
+    printf("\n");
 
-    Node* queue_desc = create_queue_desc(5);
+    Node* queue_desc = create_queue_desc(N);
     printf("Убывающая очередь: ");
     print_list(queue_desc); 
+    printf("Контрольная сумма убывающей очереди: %d\n", checksum(queue_desc));
+    printf("Количество серий убывающей очереди: %d\n", count_series(queue_desc));
+    printf("\n");
+    srand(time(NULL));
 
-    Node* queue_rand = create_queue_random(5, 10, 20);
+    Node* queue_rand = create_queue_random(N, 0, 50);
     printf("Случайная очередь: ");
     print_list(queue_rand);
-
-    printf("\nКонтрольная сумма возрастающего стека: %d\n", checksum(stack_asc));
-    printf("Количество серий возрастающего стека: %d\n", count_series(stack_asc));
-    printf("Количество серий убывающего стека: %d\n", count_series(stack_desc));
-    printf("Количество серий убывающего стека: %d\n", count_series(stack_rand));
+    printf("Контрольная сумма случайной очереди: %d\n", checksum(queue_rand));
+    printf("Количество серий случайной очереди: %d\n", count_series(queue_rand));
+    printf("\n");
 
 
-    printf("\nРекурсивная печать в прямом порядке: ");
+
+
+    printf("\nРекурсивная печать возрастающего стека в прямом порядке: ");
     print_forward_recursive(stack_asc); 
 
-    printf("Рекурсивная печать в убывающем порядке: ");
+    printf("Рекурсивная печать возрастающего стека в убывающем порядке: ");
     print_backward_recursive(stack_asc); 
 
     printf("\n");
