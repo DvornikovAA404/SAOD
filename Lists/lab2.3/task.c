@@ -3,6 +3,8 @@
 #include <time.h>
 #include <math.h>
 
+#define NUM_BUCKETS 10 // Исправлено: макрос вместо const int
+
 typedef struct Node {
     int data;
     struct Node* next;
@@ -46,8 +48,8 @@ Node* create_random(int n) {
     return head;
 }
 
-// Удаление списка
 void delete_list(Node** head) {
+    if (!head || !*head) return;
     Node* current = *head;
     while (current) {
         Node* temp = current;
@@ -59,14 +61,14 @@ void delete_list(Node** head) {
 
 // Цифровая сортировка (LSD для 4-байтовых чисел)
 Node* digitalSort(Node* head, int reverse) {
-    const int BITS = 32; // Для 4-байтовых чисел
-    Node* buckets[2][10] = {0}; // 10 корзин для каждой цифры (0-9)
-    int current_bit = 0;
+    const int BITS = 32; 
+    Node* buckets[2][NUM_BUCKETS] = {0}; // Корзины для цифр 0-9
 
     for (int bit = 0; bit < BITS; bit++) {
+        // Размещение узлов по корзинам
         Node* current = head;
         while (current) {
-            int digit = (current->data >> current_bit) & 0x1; // Для примера: битовая сортировка
+            int digit = (current->data >> bit) & 0x1; 
             Node* next = current->next;
             current->next = buckets[reverse][digit];
             buckets[reverse][digit] = current;
@@ -77,16 +79,18 @@ Node* digitalSort(Node* head, int reverse) {
         // Сборка списка обратно
         head = NULL;
         Node** tail = &head;
-        for (int i = 0; i < 10; i++) {
-            Node* bucket = reverse ? buckets[reverse][9 - i] : buckets[reverse][i];
+        for (int i = 0; i < NUM_BUCKETS; i++) {
+            int idx = reverse ? (NUM_BUCKETS - 1 - i) : i;
+            Node* bucket = buckets[reverse][idx];
             while (bucket) {
                 *tail = bucket;
                 tail = &(bucket->next);
                 bucket = bucket->next;
             }
+            buckets[reverse][idx] = NULL; 
         }
-        current_bit++;
     }
+
     return head;
 }
 
@@ -135,10 +139,9 @@ void testDigitalSort() {
 
     for (int i = 0; i < 5; i++) {
         int n = sizes[i];
-        int theory = n; // M = const * n (const = 1 для примера)
-        int results[3] = {0}; // [Убыв., Случ., Возр.]
+        int theory = n; 
+        int results[3] = {0}; 
 
-        // Тестирование для каждого типа
         for (int t = 0; t < 3; t++) {
             Node* list = NULL;
             switch(t) {
@@ -148,12 +151,8 @@ void testDigitalSort() {
             }
 
             M_f = 0;
-            list = digitalSort(list, 0); // Прямой порядок
+            list = digitalSort(list, 0);
             results[t] = M_f;
-
-            // Проверка сортировки
-            printf("N=%d, Тип=%d: Контр. сумма=%d, Серий=%d\n", 
-                   n, t, checksum(list), count_series(list));
             delete_list(&list);
         }
 
