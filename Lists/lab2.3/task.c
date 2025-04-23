@@ -3,16 +3,16 @@
 #include <time.h>
 #include <math.h>
 
-#define NUM_BUCKETS 10 // Исправлено: макрос вместо const int
+#define NUM_BUCKETS 10
 
 typedef struct Node {
     int data;
     struct Node* next;
 } Node;
 
-int M_f = 0; // Счётчик перемещений
+int M_f = 0;
 
-// Создание списков
+
 Node* create_desc(int n) {
     Node* head = NULL;
     for (int i = n; i >= 1; i--) {
@@ -59,24 +59,24 @@ void delete_list(Node** head) {
     *head = NULL;
 }
 
-// Цифровая сортировка (LSD для 4-байтовых чисел)
+
 Node* digitalSort(Node* head, int reverse) {
     const int BITS = 32; 
-    Node* buckets[2][NUM_BUCKETS] = {0}; // Корзины для цифр 0-9
+    Node* buckets[2][NUM_BUCKETS] = {0}; 
 
     for (int bit = 0; bit < BITS; bit++) {
-        // Размещение узлов по корзинам
+
         Node* current = head;
         while (current) {
             int digit = (current->data >> bit) & 0x1; 
             Node* next = current->next;
             current->next = buckets[reverse][digit];
             buckets[reverse][digit] = current;
-            M_f++;
+
             current = next;
         }
 
-        // Сборка списка обратно
+
         head = NULL;
         Node** tail = &head;
         for (int i = 0; i < NUM_BUCKETS; i++) {
@@ -86,6 +86,7 @@ Node* digitalSort(Node* head, int reverse) {
                 *tail = bucket;
                 tail = &(bucket->next);
                 bucket = bucket->next;
+                M_f++;
             }
             buckets[reverse][idx] = NULL; 
         }
@@ -94,7 +95,7 @@ Node* digitalSort(Node* head, int reverse) {
     return head;
 }
 
-// Проверка контрольной суммы
+
 int checksum(Node* head) {
     int sum = 0;
     Node* current = head;
@@ -105,7 +106,7 @@ int checksum(Node* head) {
     return sum;
 }
 
-// Подсчёт серий
+
 int count_series(Node* head) {
     if (!head) return 0;
     int count = 1;
@@ -119,7 +120,7 @@ int count_series(Node* head) {
     return count;
 }
 
-// Форматирование таблицы
+
 void printHeader() {
     printf("| %-5s | %-11s | %-7s | %-7s | %-7s |\n", 
            "N", "Теория (M)", "Убыв.", "Случ.", "Возр.");
@@ -131,7 +132,7 @@ void printRow(int n, int theory, int desc, int rand, int asc) {
            n, theory, desc, rand, asc);
 }
 
-// Тестирование для всех типов данных
+
 void testDigitalSort() {
     int sizes[] = {100, 200, 300, 400, 500};
     printf("\nТрудоемкость цифровой сортировки DigitalSort\n");
@@ -139,7 +140,7 @@ void testDigitalSort() {
 
     for (int i = 0; i < 5; i++) {
         int n = sizes[i];
-        int theory = n; 
+        int theory = sizeof(int)*8*n; 
         int results[3] = {0}; 
 
         for (int t = 0; t < 3; t++) {
