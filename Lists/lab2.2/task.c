@@ -85,22 +85,34 @@ Node* merge(Node* left, Node* right) {
     return dummy.next;
 }
 
+Node* splitList(Node* head) {
+    if (!head || !head->next) return NULL;
+
+    Node* k = head;
+    Node* p = head->next;
+
+    while (p != NULL) {
+        k->next = p->next;
+        k = p;
+        p = p->next;
+        M_f += 3;
+    }
+
+    Node* right = k->next;
+    k->next = NULL;
+    M_f += 3;
+
+    return right;
+}
+
 Node* mergeSort(Node* head) {
     if (!head || !head->next) return head;
 
-    Node* slow = head;
-    Node* fast = head->next;
-    while (fast && fast->next) {
-        slow = slow->next;
-        fast = fast->next->next;
-        M_f += 2; 
-    }
-    Node* right = slow->next;
-    slow->next = NULL;
-    M_f += 2; 
+    Node* right = splitList(head);
 
     return merge(mergeSort(head), mergeSort(right));
 }
+
 
 
 void printHeader() {
@@ -114,6 +126,20 @@ void printRow(int n, int theory, int desc, int rand, int asc) {
            n, theory, desc, rand, asc);
 }
 
+int count_series(Node* head) {
+    if (!head) return 0;
+    int count = 1;
+    int prev = head->data;
+    Node* current = head->next;
+    while (current) {
+        if (current->data < prev) {
+            count++;
+            prev = current->data;
+        }
+        current = current->next;
+    }
+    return count;
+}
 
 void testMergeSort() {
     int sizes[] = {100, 200, 300, 400, 500};
@@ -122,7 +148,7 @@ void testMergeSort() {
 
     for (int i = 0; i < 5; i++) {
         int n = sizes[i];
-        int theory = n * (int)ceil(log2(n)) + n * (int)ceil(log2(n)) + n;
+        int theory = n * log2(n);
         int results[3] = {0};
 
 

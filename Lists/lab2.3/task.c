@@ -3,7 +3,7 @@
 #include <time.h>
 #include <math.h>
 
-#define NUM_BUCKETS 10
+#define NUM_BUCKETS 2 // Исправлено на 2 корзины для битовой сортировки
 
 typedef struct Node {
     int data;
@@ -11,7 +11,6 @@ typedef struct Node {
 } Node;
 
 int M_f = 0;
-
 
 Node* create_desc(int n) {
     Node* head = NULL;
@@ -59,23 +58,18 @@ void delete_list(Node** head) {
     *head = NULL;
 }
 
-
-Node* digitalSort(Node* head, int reverse) {
-    const int BITS = 32; 
+Node* digitalSort(Node* head, int reverse, int bits) {
     Node* buckets[2][NUM_BUCKETS] = {0}; 
 
-    for (int bit = 0; bit < BITS; bit++) {
-
+    for (int bit = 0; bit < bits; bit++) {
         Node* current = head;
         while (current) {
             int digit = (current->data >> bit) & 0x1; 
             Node* next = current->next;
             current->next = buckets[reverse][digit];
             buckets[reverse][digit] = current;
-
             current = next;
         }
-
 
         head = NULL;
         Node** tail = &head;
@@ -95,7 +89,6 @@ Node* digitalSort(Node* head, int reverse) {
     return head;
 }
 
-
 int checksum(Node* head) {
     int sum = 0;
     Node* current = head;
@@ -105,7 +98,6 @@ int checksum(Node* head) {
     }
     return sum;
 }
-
 
 int count_series(Node* head) {
     if (!head) return 0;
@@ -120,7 +112,6 @@ int count_series(Node* head) {
     return count;
 }
 
-
 void printHeader() {
     printf("| %-5s | %-11s | %-7s | %-7s | %-7s |\n", 
            "N", "Теория (M)", "Убыв.", "Случ.", "Возр.");
@@ -132,15 +123,15 @@ void printRow(int n, int theory, int desc, int rand, int asc) {
            n, theory, desc, rand, asc);
 }
 
-
-void testDigitalSort() {
+void testDigitalSortBits(int bits) {
     int sizes[] = {100, 200, 300, 400, 500};
-    printf("\nТрудоемкость цифровой сортировки DigitalSort\n");
+    const char* bitLabel = (bits == 16) ? "16-bit" : "32-bit";
+    printf("\nТрудоемкость цифровой сортировки DigitalSort (%s)\n", bitLabel);
     printHeader();
 
     for (int i = 0; i < 5; i++) {
         int n = sizes[i];
-        int theory = sizeof(int)*8*n; 
+        int theory = bits * n; 
         int results[3] = {0}; 
 
         for (int t = 0; t < 3; t++) {
@@ -152,7 +143,7 @@ void testDigitalSort() {
             }
 
             M_f = 0;
-            list = digitalSort(list, 0);
+            list = digitalSort(list, 0, bits);
             results[t] = M_f;
             delete_list(&list);
         }
@@ -162,6 +153,7 @@ void testDigitalSort() {
 }
 
 int main() {
-    testDigitalSort();
+    testDigitalSortBits(32); // Тест для 32-битных чисел
+    testDigitalSortBits(16); // Тест для 16-битных чисел
     return 0;
 }
