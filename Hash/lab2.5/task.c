@@ -3,138 +3,118 @@
 #include <string.h>
 #include <stdbool.h>
 
-// Функция для проверки, является ли число простым
-bool is_prime(int n) {
+bool isPrime(int n) {
     if (n <= 1) return false;
-    if (n <= 3) return true;
-    if (n % 2 == 0 || n % 3 == 0) return false;
-    for (int i = 5; i * i <= n; i += 6) {
-        if (n % i == 0 || n % (i + 2) == 0) return false;
+    for (int i = 2; i * i <= n; i++) {
+        if (n % i == 0) return false;
     }
     return true;
 }
 
-// Функция для вычисления хеша
-unsigned int hash_function(char c, unsigned int m) {
-    unsigned int h = 0; // Начальное значение хеша
-    h = (h * 256 + (unsigned char)c) % m;
-    return h;
+int hash(char c, int size) {
+    return (c % size + size) % size; 
 }
 
-// Функция для линейного пробирования
-int linear_probe(int hashValue, int attempt, int m) {
-    return (hashValue + attempt) % m;
+int linearProbe(int *table, int size, int key) {
+    int i = 0;
+    int index;
+    do {
+        index = (key + i) % size;
+        i++;
+    } while (table[index] != 0 && i < size);
+    return index;
 }
 
-// Функция для квадратичного пробирования
-int quadratic_probe(int hashValue, int attempt, int m) {
-    return (hashValue + attempt * attempt) % m;
+int quadraticProbe(int *table, int size, int key) {
+    int i = 0;
+    int index;
+    do {
+        index = (key + i * i) % size;
+        i++;
+    } while (table[index] != 0 && i < size);
+    return index;
 }
 
-// Функция для вставки ключа с линейным пробированием и подсчета коллизий
-int insert_linear(char hashTable[], char key, int m) {
-    unsigned int hashValue = hash_function(key, m);
-    int attempt = 0;
+int insert(int *table, int size, char c, int method) {
+    int key = hash(c, size);
     int collisions = 0;
-    while (hashTable[hashValue] != '\0') {
-        collisions++;
-        hashValue = linear_probe(hashValue, ++attempt, m);
+    int index;
+
+    if (method == 1) { 
+        index = linearProbe(table, size, key);
+        collisions = (index - key + size) % size;
+    } else { 
+        index = quadraticProbe(table, size, key);
+        collisions = (index - key + size) % size;
     }
-    hashTable[hashValue] = key;
+
+    table[index] = c; 
     return collisions;
 }
 
-// Функция для вставки ключа с квадратичным пробированием и подсчета коллизий
-int insert_quadratic(char hashTable[], char key, int m) {
-    unsigned int hashValue = hash_function(key, m);
-    int attempt = 0;
-    int collisions = 0;
-    while (hashTable[hashValue] != '\0') {
-        collisions++;
-        hashValue = quadratic_probe(hashValue, ++attempt, m);
-    }
-    hashTable[hashValue] = key;
-    return collisions;
-}
-
-// Функция для вывода хеш-таблицы
-void printHashTable(char hashTable[], int m) {
-    printf("| %-15s |", "Номер ячейки");
-    for (int i = 0; i < m; i++) {
-        printf("%4d |", i);
-    }
-    printf("\n");
-
-    printf("| %-15s |", "Символ");
-    for (int i = 0; i < m; i++) {
-        if (hashTable[i] != '\0') {
-            printf("  %c  |", hashTable[i]);
+void printHashTable(int *table, int size, const char *method) {
+    printf("%s хеш-таблица:\n", method);
+    for (int i = 0; i < size; i++) {
+        if (table[i] == 0) {
+            printf("- "); 
         } else {
-            printf("     |");
+            printf("%c ", table[i]); 
         }
     }
     printf("\n\n");
 }
 
-// Функция для вывода заголовка таблицы
-void printHeader() {
-    printf("| %-25s | %-25s | %-20s | %-20s |\n",
-           "Размер хеш-таблицы", "Количество исходных символов",
-           "Количество коллизий (линейные пробы)", "Количество коллизий (квадратичные пробы)");
-    printf("|-------------------------|-----------------------------|---------------------|---------------------|\n");
-}
-
-// Функция для вывода строки таблицы
-void printRow(int tableSize, int initialSymbols, int linearCollisions, int quadraticCollisions) {
-    printf("| %-25d | %-25d | %-20d | %-20d |\n",
-           tableSize, initialSymbols, linearCollisions, quadraticCollisions);
-}
-
 int main() {
-    // Найти 10 простых чисел между 11 и 101
-    int primes[10];
-    int index = 0;
-    for (int i = 11; index < 10 && i <= 101; i++) {
-        if (is_prime(i)) {
-            primes[index++] = i;
-        }
+    char key[] = "DVORNIKOVAND";
+    int numKeys = strlen(key);
+
+
+
+
+    int size = 11;
+    int *linearTable = (int *)calloc(size, sizeof(int));
+    int *quadraticTable = (int *)calloc(size, sizeof(int));
+
+    if (linearTable == NULL || quadraticTable == NULL) {
+        fprintf(stderr, "Ошибка выделения памяти\n");
+        return 1;
     }
 
-    // Ключевое слово в английском транслите
-    const char *key_string = "DVORNIKOVAND";
-    int key_length = strlen(key_string);
+    for (int j = 0; j < numKeys; j++) {
+        insert(linearTable, size, key[j], 1);
+        insert(quadraticTable, size, key[j], 2);
+    }
 
-    // Исследование коллизий для каждого размера хеш-таблицы
-    printf("Исследование количества коллизий:\n");
-    printHeader();
+    printHashTable(linearTable, size, "Линейная");
+    printHashTable(quadraticTable, size, "Квадратичная");
+    printf("| %-15s | %-19s | %-19s | %-19s |\n", "Размер", "Количество исх. символов", "Кол-во коллизий (Линейные пробы)", "Кол-во коллизий (Квадратичные пробы)");
+    free(linearTable);
+    free(quadraticTable);
+    for (int size = 11; size <= 101; size++) {
+        if (!isPrime(size)) continue;
 
-    for (int i = 0; i < 10; i++) {
-        int m = primes[i];
-        char hashTableLinear[m]; // Хеш-таблица для линейных проб
-        char hashTableQuadratic[m]; // Хеш-таблица для квадратичных проб
+        int *linearTable = (int *)calloc(size, sizeof(int));
+        int *quadraticTable = (int *)calloc(size, sizeof(int));
 
-        // Инициализация хеш-таблиц
-        memset(hashTableLinear, '\0', sizeof(char) * m);
-        memset(hashTableQuadratic, '\0', sizeof(char) * m);
-
-        int totalLinearCollisions = 0;
-        int totalQuadraticCollisions = 0;
-
-        // Вставка ключей и подсчет коллизий
-        for (int j = 0; j < key_length; j++) {
-            totalLinearCollisions += insert_linear(hashTableLinear, key_string[j], m);
-            totalQuadraticCollisions += insert_quadratic(hashTableQuadratic, key_string[j], m);
+        if (linearTable == NULL || quadraticTable == NULL) {
+            fprintf(stderr, "Ошибка выделения памяти\n");
+            return 1;
         }
 
-        // Вывод хеш-таблиц
-        printf("\nХеш-таблица с линейным пробированием (размер %d):\n", m);
-        printHashTable(hashTableLinear, m);
+        int linearCollisions = 0;
+        int quadraticCollisions = 0;
 
-        printf("Хеш-таблица с квадратичным пробированием (размер %d):\n", m);
-        printHashTable(hashTableQuadratic, m);
+        for (int j = 0; j < numKeys; j++) {
+            linearCollisions += insert(linearTable, size, key[j], 1);
+            quadraticCollisions += insert(quadraticTable, size, key[j], 2);
+        }
 
-        // Вывод результатов
-        printRow(m, key_length, totalLinearCollisions, totalQuadraticCollisions);
+        
+
+        printf("| %-9d | %-24d | %-32d | %-36d |\n", size, numKeys, linearCollisions, quadraticCollisions);
+
+        free(linearTable);
+        free(quadraticTable);
     }
 
     return 0;
