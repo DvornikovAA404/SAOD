@@ -11,7 +11,6 @@ typedef struct Node {
 int C_f; 
 int M_f; 
 
-
 Node* create_desc(int n) {
     Node* head = NULL;
     for (int i = n; i >= 1; i--) {
@@ -50,7 +49,6 @@ Node* create_random(int n) {
     return head;
 }
 
-
 void delete_list(Node** head) {
     Node* current = *head;
     while (current) {
@@ -62,14 +60,12 @@ void delete_list(Node** head) {
     *head = NULL;
 }
 
-
 Node* merge(Node* left, Node* right) {
     Node dummy;
     Node* tail = &dummy;
     dummy.next = NULL;
 
     while (left && right) {
-        C_f++;
         if (left->data <= right->data) {
             tail->next = left;
             left = left->next;
@@ -85,35 +81,51 @@ Node* merge(Node* left, Node* right) {
     return dummy.next;
 }
 
-Node* splitList(Node* head) {
-    if (!head || !head->next) return NULL;
+Node* split_series(Node* head, int k) {
+    if (!head) return NULL;
+    Node* current = head;
+    while (current->next && k > 1) {
+        current = current->next;
+        k--;
+        M_f++;
+    }
+    Node* next_part = current->next;
+    current->next = NULL;
+    M_f++;
+    return next_part;
+}
 
-    Node* k = head;
-    Node* p = head->next;
-
-    while (p != NULL) {
-        k->next = p->next;
-        k = p;
-        p = p->next;
-        M_f += 3;
+Node* MergeSort(Node* head) {
+    int n = 0;
+    Node* tmp = head;
+    while (tmp) {
+        n++;
+        tmp = tmp->next;
+        M_f++;
     }
 
-    Node* right = k->next;
-    k->next = NULL;
-    M_f += 3;
+    Node* sorted = head;
+    for (int k = 1; k < n; k *= 2) {
+        Node dummy;
+        Node* tail = &dummy;
+        dummy.next = NULL;
 
-    return right;
+        while (sorted) {
+            Node* left = sorted;
+            Node* right = split_series(left, k);
+            sorted = split_series(right, k);
+
+            Node* merged = merge(left, right);
+            tail->next = merged;
+            while (tail->next) {
+                tail = tail->next;
+                M_f++;
+            }
+        }
+        sorted = dummy.next;
+    }
+    return sorted;
 }
-
-Node* mergeSort(Node* head) {
-    if (!head || !head->next) return head;
-
-    Node* right = splitList(head);
-
-    return merge(mergeSort(head), mergeSort(right));
-}
-
-
 
 void printHeader() {
     printf("| %-5s | %-20s | %-7s | %-7s | %-7s |\n", 
@@ -148,9 +160,8 @@ void testMergeSort() {
 
     for (int i = 0; i < 5; i++) {
         int n = sizes[i];
-        int theory = n * log2(n);
+        int theory = 3.0 * n * log2(n);
         int results[3] = {0};
-
 
         for (int t = 0; t < 3; t++) {
             Node* list = NULL;
@@ -162,7 +173,7 @@ void testMergeSort() {
 
             C_f = 0;
             M_f = 0;
-            list = mergeSort(list);
+            list = MergeSort(list);
             results[t] = C_f + M_f;
             delete_list(&list);
         }
